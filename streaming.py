@@ -1,4 +1,6 @@
 from __future__ import absolute_import, print_function
+
+import nltk, matplotlib
 import json
 
 from tweepy.streaming import StreamListener
@@ -20,12 +22,16 @@ class StdOutListener(StreamListener):
     This is a basic listener that just prints received tweets to stdout.
     """
     def on_data(self, data):
-        print(json.loads(data)['text'])
+        text = (json.loads(data)['text'])
+        text = (nltk.word_tokenize(text))
+        word_tags = nltk.ConditionalFreqDist(text)
+        possible_tags = [(w, list(word_tags[w].keys())) for w in text]
+        print(text)
+        print(possible_tags)
         return True
 
     def on_error(self, status):
         print(status)
-
 
 if __name__ == '__main__':
     l = StdOutListener()
@@ -33,4 +39,4 @@ if __name__ == '__main__':
     auth.set_access_token(access_token, access_token_secret)
 
     stream = Stream(auth, l)
-    stream.filter(track=['sarcasm'])
+    stream.filter(track=['#sarcasm', '#sarcastic'])
