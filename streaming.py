@@ -7,27 +7,19 @@ from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 
-# Go to http://apps.twitter.com and create an app.
-# The consumer key and secret will be generated for you after
+#Access keys for Twitter API
 consumer_key="8HWEs4jn3xtACLsGIWLYUpQPk"
 consumer_secret="psCQLSvzknEqO3t1RNUSAySYza97Kiqq19kyqmCP6c2NCyvIqQ"
-
-# After the step above, you will be redirected to your app's page.
-# Create an access token under the the "Your access token" section
 access_token="561611360-UqcM5EUcireTX13YlW56F6oaPlkYgMk7ixTvAvvy"
 access_token_secret="CpUApbuhJdE2CLxt8RnABLWKaHXZbps5dB4DtVBGdHYIt"
 
 class StdOutListener(StreamListener):
-    """ A listener handles tweets that are received from the stream.
-    This is a basic listener that just prints received tweets to stdout.
-    """
+
+    # only look at the tweet's text itself, tokenize it as we read in tweets
     def on_data(self, data):
         text = (json.loads(data)['text'])
         text = (nltk.word_tokenize(text))
-        word_tags = nltk.ConditionalFreqDist(text)
-        possible_tags = [(w, list(word_tags[w].keys())) for w in text]
         print(text)
-        print(possible_tags)
         return True
 
     def on_error(self, status):
@@ -39,4 +31,6 @@ if __name__ == '__main__':
     auth.set_access_token(access_token, access_token_secret)
 
     stream = Stream(auth, l)
+
+    #looking for tweets with hashtags denoting sarcasm
     stream.filter(track=['#sarcasm', '#sarcastic'])
